@@ -19,7 +19,7 @@ This image is designed to run the Deskbot agent in an isolated, fully equipped e
 - **Desktop Environment**: `Xvfb` (Virtual Framebuffer), `XFCE4`, and system X11 utilities (`x11-utils`)
 - **Remote Access**: `x11vnc`, `novnc`, and `websockify` for viewing the virtual desktop in a browser
 - **Input & Accessibility**: `xdotool`, `xclip`, `at-spi2-core`, and `libatk-adaptor` for GUI interaction and introspection used by `deskbot-executor` and `deskbot-core`
-- **Applications**: `libreoffice` and Google Chrome (`google-chrome-stable`)
+- **Applications**: `libreoffice` and Google Chrome/Chromium (`google-chrome-stable` for amd64, `chromium` for arm64)
 - **Cloud Tools**: Google Cloud CLI (`google-cloud-cli`)
 - **Process Management**: `supervisor` and `gosu` for clean service management and privilege dropping
 

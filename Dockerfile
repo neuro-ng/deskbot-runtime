@@ -39,17 +39,29 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# ── Google Chrome Stable ──────────────────────────────────────────────────────
+# ── Google Chrome / Chromium ──────────────────────────────────────────────────
 # Ubuntu 22.04 ships Chromium as a snap (unavailable inside Docker).
-# Google Chrome Stable provides an equivalent .deb package.
-RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
-      | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] \
-             http://dl.google.com/linux/chrome/deb/ stable main" \
-         > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends google-chrome-stable \
-    && rm -rf /var/lib/apt/lists/*
+# For amd64, we use Google Chrome Stable. For arm64, we use Chromium from an Ubuntu PPA.
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "amd64" ] || [ -z "$TARGETARCH" ]; then \
+        curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
+          | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
+        && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] \
+                 http://dl.google.com/linux/chrome/deb/ stable main" \
+             > /etc/apt/sources.list.d/google-chrome.list \
+        && apt-get update \
+        && apt-get install -y --no-install-recommends google-chrome-stable \
+        && rm -rf /var/lib/apt/lists/* ; \
+    elif [ "$TARGETARCH" = "arm64" ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends software-properties-common \
+        && add-apt-repository -y ppa:xtradeb/apps \
+        && apt-get update \
+        && apt-get install -y --no-install-recommends chromium \
+        && rm -rf /var/lib/apt/lists/* ; \
+    else \
+        echo "Unsupported architecture: $TARGETARCH" && exit 1 ; \
+    fi
 
 # ── Google Cloud CLI ──────────────────────────────────────────────────────────
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
