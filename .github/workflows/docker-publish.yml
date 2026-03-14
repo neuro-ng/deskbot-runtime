@@ -52,7 +52,7 @@ jobs:
         with:
           images: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/deskbot-builder
+            ${{ secrets.DOCKERHUB_USERNAME }}/deskbot-runtime
           tags: |
             type=ref,event=branch
             type=ref,event=pr
